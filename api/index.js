@@ -9,15 +9,10 @@ const gamesRoutes = require("./routes/gamesRoutes");
 
 const app = express();
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: "https://my-game-shop.vercel.app/",
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(express.json());
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000; //https://my-game-shop.vercel.app/
 
 connectDB();
 
