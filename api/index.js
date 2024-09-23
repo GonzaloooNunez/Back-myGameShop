@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const connectDB = require("./config/db");
 const router = require("./routes/routes");
@@ -8,39 +9,25 @@ const gamesRoutes = require("./routes/gamesRoutes");
 
 const app = express();
 app.use(cookieParser());
-
-const allowCors = (fn) => async (req, res) => {
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://my-game-shop.vercel.app"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET,OPTIONS,PATCH,DELETE,POST,PUT"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
-  );
-  if (req.method === "OPTIONS") {
-    res.status(200).end();
-    return;
-  }
-  return await fn(req, res);
+const corsOptions = {
+  origin: "https://my-game-shop.vercel.app/",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+  optionsSuccessStatus: 200,
 };
 
+app.use(cors(corsOptions));
 app.use(express.json());
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000; //https://my-game-shop.vercel.app/
 
 connectDB();
 
-// Wrapping all routes with allowCors function
-app.use("/", allowCors(router));
-app.use("/user", allowCors(userRoutes));
-app.use("/games", allowCors(gamesRoutes));
+app.use(express.json());
+
+app.use("/", router);
+app.use("/user", userRoutes);
+app.use("/games", gamesRoutes);
 
 app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
-});
+  console.log(Servidor corriendo en http://localhost:${port});
