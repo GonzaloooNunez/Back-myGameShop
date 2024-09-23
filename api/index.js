@@ -10,7 +10,7 @@ const gamesRoutes = require("./routes/gamesRoutes");
 const app = express();
 app.use(cookieParser());
 const corsOptions = {
-  origin: "https://my-game-shop.vercel.app/",
+  origin: "https://my-game-shop.vercel.app",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 200,
