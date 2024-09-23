@@ -30,4 +30,5 @@ app.use("/user", userRoutes);
 app.use("/games", gamesRoutes);
 
 app.listen(port, () => {
-  console.log(Servidor corriendo en http://localhost:${port});
+  console.log(`Servidor corriendo en http://localhost:${port}`);
+});
