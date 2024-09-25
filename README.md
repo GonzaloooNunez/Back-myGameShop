@@ -1,215 +1,176 @@
-# Tienda de juegos
+Back-myGameShop
+Description
 
-/\*Vamos a montar una tienda de ropa con un catálogo de productos y un dashboard para el administrador. Los productos se guardarán en una base de datos de mongo en Atlas. Podemos usar como referencia el pdf [web_ejemplo.pdf](web_ejemplo.pdf) que contiene un ejemplo de cómo podría ser la interfaz de la tienda y el dashboard.
+Back-myGameShop is a backend system developed for managing an online video game store. It provides a robust platform for handling products, managing inventory, and performing efficient CRUD operations (Create, Read, Update, Delete). Built with Node.js and Express.js, it leverages MongoDB for data storage, aiming to provide a secure and scalable API for video game stores seeking a modern and functional backend solution.
 
-## Índice
+This project includes:
 
-- [Estructura de archivos](#estructura-de-archivos)
-- [Creación de base de datos](#creación-de-base-de-datos)
-- [Creación del servidor](#creación-del-servidor)
-- [Creación de modelos](#creación-de-modelos)
-- [Creación de rutas](#creación-de-rutas)
-- [Creación de controladores](#creación-de-controladores)
-- [Despliegue](#despliegue)
-- [Documentación](#documentación)
-- [Bonus 1 - Tests](#bonus-1---tests)
-- [Bonus 2 - Autenticación con Firebase](#bonus-2---autenticación-con-firebase)
-- [Bonus 3 - API y documentación con Swagger](#bonus-3---api-y-documentación-con-swagger)
-- [Recursos](#recursos)
+    Full product management through a CRUD interface.
+    Input data validation.
+    Flexible configuration for multiple development environments.
+    Scalability for future features and implementations.
 
-## Estructura de archivos
+Features
 
-Vamos a crear la estructura de archivos que vamos a necesitar para el proyecto.
+    Product CRUD: Admins can create, list, update, and delete products from the inventory.
+    MongoDB Integration: Uses a cloud-based MongoDB Atlas database to store product data.
+    Error Handling: A robust error-handling system that returns clear responses to facilitate development and debugging.
+    Authentication: The potential to integrate authentication for protecting routes and ensuring only admins can access CRUD functions.
+    Flexible Deployment: Adaptable for development, production, and testing environments.
 
-```
-.
-├── src
-│   ├── config
-│   │   ├── db.js
-│   │   └── firebase.js (BONUS)
-│   ├── controllers
-│   │   ├── productController.js
-│   │   └──authController.js (BONUS)
-│   ├── models
-│   │   └── Product.js
-│   ├── routes
-│   │   └── productRoutes.js
-│   │   └── authRoutes.js (BONUS)
-│   ├── middlewares (BONUS)
-│   │   └── authMiddleware.js
-│   └── index.js
-├── test (BONUS)
-│   └── productController.test.js
-├── public
-│   ├── styles.css
-│   └── images (OPCIONAL)
-├── .env
-└── package.json
+Technologies Used
 
-```
+    Node.js: JavaScript runtime environment for server-side applications.
+    Express.js: Minimalist backend framework for building RESTful APIs.
+    MongoDB: NoSQL database for flexible product storage.
+    Mongoose: ODM (Object Data Modeling) for MongoDB, simplifying database interactions.
+    dotenv: Secure environment variable management.
+    Cors: Middleware for handling cross-origin resource sharing (CORS) policies.
 
-### Características de los archivos
+Prerequisites
 
-- `config/db.js`: Archivo que contendrá la configuración de la base de datos. Deberá conectarse a la base de datos de mongo en Atlas.
-- `controllers/productController.js`: Archivo que contendrá la lógica para manejar las solicitudes CRUD de los productos. Devolverá las respuestas en formato HTML.
-- `models/Product.js`: Archivo que contendrá la definición del esquema del producto utilizando Mongoose.
-- `routes/productRoutes.js`: Archivo que contendrá la definición de las rutas CRUD para los productos. Este llama a los métodos del controlador.
-- `index.js`: Archivo principal que iniciará el servidor Express. Importa las rutas y las usa. También tiene que estar configurado para servir archivos estáticos y para leer el body de las peticiones de formularios.
-- `public/styles.css`: Archivo que contendrá los estilos de la aplicación (recomendable).
-- `public/images`: Carpeta que contendrá las imágenes de los productos (opcional).Se puede evitar si se usan urls externas para las imágenes.
-- `.env`: Archivo que contendrá las variables de entorno. En este caso, la uri de la base de datos de Atlas o el puerto de la aplicación. Más adelante añadiremos más variables de entorno, como la palabra secreta para la sesión.
-- `package.json`: Archivo que contendrá las dependencias del proyecto. Crearemos un script para iniciar el servidor con node y otro para iniciar el servidor con nodemon.("start": "node src/index.js", "dev": "nodemon src/index.js").
+Before starting, make sure you have the following installed:
 
-**BONUS**
+    Node.js v12.x or higher
+    MongoDB Atlas or a local MongoDB instance
+    A .env file with the following environment variables:
+        MONGO_URI: Your MongoDB database URI.
+        PORT: The port where the server will run (optional, defaults to 5000).
 
-- `config/firebase.js`: Archivo que contendrá la configuración de firebase. Deberá inicializar la conexión con firebase.
-- `controllers/authController.js`: Archivo que contendrá la lógica para manejar las solicitudes de autenticación. Devolverá las respuestas en formato HTML.
-- `routes/authRoutes.js`: Archivo que contendrá la definición de las rutas para la autenticación. Este llama a los métodos del controlador.
-- `middlewares/authMiddleware.js`: Archivo que contendrá el middleware para comprobar si el usuario está autenticado. Este buscará la sesión del usuario y, si no la encuentra, redirigirá al formulario de login.
+Installation
 
-## Creacíon de base de datos
+1. Clone the repository
 
-Vamos a crear la base de datos en Atlas. Creamos un nuevo proyecto y lo desplegamos.
+Clone this repository to your local machine using the following command:
 
-Una vez creada la base de datos, copiamos la uri y la guardamos en el archivo .env
+bash
 
-```
-MONGO_URI=<uri_bd_atlas>
-```
+git clone https://github.com/GonzaloooNunez/Back-myGameShop.git
 
-## Creación del servidor
+2. Install dependencies
 
-Vamos a crear el servidor con express. El servidor devolverá las vistas usando template literals. Para interfaces más complejas, se podría usar un motor de plantillas como pug. También necesitaremos leer el body de las peticiones tipo post. Como trabajaremos con formularios html, necesitaremos el middleware `express.urlencoded` para leer el body de las peticiones.
+Navigate to the project folder and install the required dependencies using npm:
 
-Para poder añadir estilos, imágenes, etc. necesitaremos el middleware `express.static` para servir archivos estáticos. En nuestro caso, serviremos los archivos estáticos desde la carpeta `public`.
+bash
 
-El puerto en el que escuchará el servidor lo cargaremos desde el archivo .env usando `dotenv`.
+cd Back-myGameShop
+npm install
 
-Creamos el archivo `index.js` en la carpeta `src` y añadimos el código necesario para crear el servidor.
+3. Set up environment variables
 
-## Creación de modelo
+Create a .env file in the root of the project with the following variables:
 
-Vamos a crear el modelo de producto. El modelo de producto tendrá los siguientes campos:
+bash
 
-- name
-- Descripción
-- Imagen
-- Categoría
-- Talla
-- Precio
+MONGO_URI=your_mongo_uri
+PORT=5000
 
-La categoría será un string que podrá ser "Camisetas", "Pantalones", "Zapatos", "Accesorios".
+Make sure to replace your_mongo_uri with the actual URI of your MongoDB Atlas database or local instance. 4. Start the server
 
-La talla será un string que podrá ser "XS", "S", "M", "L", "XL".
+You can start the server in development mode using nodemon, which automatically restarts when changes are detected:
 
-## Creación de rutas
+bash
 
-Vamos a crear las rutas CRUD para los productos. Al usar formularios html, las rutas serán de tipo GET y POST.
-Las rutas deberían tener una estructura similar a esta:
+npm run dev
 
-- GET /products: Devuelve todos los productos. Cada producto tendrá un enlace a su página de detalle.
-- GET /products/:productId: Devuelve el detalle de un producto.
-- GET /dashboard: Devuelve el dashboard del administrador. En el dashboard aparecerán todos los artículos que se hayan subido. Si clickamos en uno de ellos nos llevará a su página para poder actualizarlo o eliminarlo.
-- GET /dashboard/new: Devuelve el formulario para subir un artículo nuevo.
-- POST /dashboard: Crea un nuevo producto.
-- GET /dashboard/:productId: Devuelve el detalle de un producto en el dashboard.
-- GET /dashboard/:productId/edit: Devuelve el formulario para editar un producto.
-- PUT /dashboard/:productId: Actualiza un producto.
-- DELETE /dashboard/:productId/delete: Elimina un producto.
+Or, to start the server in production mode:
 
-## Creación de controladores
+bash
 
-A continuación crearemos el controlador de productos. Este controlador se dedicará a manejar las solicitudes CRUD de los productos. Devolverá las respuestas en formato HTML.
-Para ello, crearemos algunas funciones auxiliares que nos ayudarán a devolver las vistas con SSR.
+npm start
 
-Las funciones principales del controlador serán:
+5. Access the API
 
-- showProducts: Devuelve la vista con todos los productos.
-- showProductById: Devuelve la vista con el detalle de un producto.
-- showNewProduct: Devuelve la vista con el formulario para subir un artículo nuevo.
-- createProduct: Crea un nuevo producto. Una vez creado, redirige a la vista de detalle del producto o a la vista de todos los productos del dashboard.
-- showEditProduct: Devuelve la vista con el formulario para editar un producto.
-- updateProduct: Actualiza un producto. Una vez actualizado, redirige a la vista de detalle del producto o a la vista de todos los productos del dashboard.
-- deleteProduct: Elimina un producto. Una vez eliminado, redirige a la vista de todos los productos del dashboard.
+The server will be available at http://localhost:5000. Available routes include:
 
-Las funciones showProducts y showProductById pueden devolver respuestas ligeramente distintas si se llega desde el dashboard o desde la vista principal. Por ejemplo, si se llega desde el dashboard, se mostrará un enlace para editar o eliminar el producto. Para ello podemos utilizar la url de la petición o pasar al controlador un parámetro extra que indique si se llega desde el dashboard o no.
+    GET /api/products: Fetch all products.
+    POST /api/products: Create a new product.
+    PUT /api/products/:id: Update an existing product.
+    DELETE /api/products/:id: Delete a product.
 
-Para generar el html de forma más eficiente y sacarlo de la lógica, podemos crear funciones y variables auxiliares que generen el html de los productos y del formulario.
-Por ejemplo:
+Project Structure
 
-- baseHtml: html común a todas las páginas. Puede contener elementos como la importación de estilos, etc.
-- getNavBar: Genera la barra de navegación con las categorías. En caso de estar en el dashboard, también generará un enlace para subir un nuevo producto.
-- getProductCards: Genera el html de los productos. Recibe un array de productos y devuelve el html de las tarjetas de los productos.
-- ...
+The project structure is organized to separate responsibilities clearly, making maintenance and scalability easier:
 
-Un ejemplo de una función para generar el html de los productos podría ser:
+bash
 
-```javascript
-function getProductCards(products) {
-  let html = "";
-  for (let product of products) {
-    html += `
-      <div class="product-card">
-        <img src="${product.image}" alt="${product.name}">
-        <h2>${product.name}</h2>
-        <p>${product.description}</p>
-        <p>${product.price}€</p>
-        <a href="/products/${product._id}">Ver detalle</a>
-      </div>
-    `;
-  }
-  return html;
-}
-```
+Back-myGameShop/
+│
+├── src/
+│ ├── config/
+│ │ └── db.js # MongoDB connection and configuration
+│ ├── controllers/
+│ │ ├── gameController.js # Business logic for products
+│ │ ├── opinionGameController.js # Business logic for game reviews
+│ │ └── userController.js # Business logic for user management
+│ ├── models/
+│ │ ├── Games.js # Product (games) schema definition with Mongoose
+│ │ ├── Admin.js # Admin schema definition
+│ │ └── Usuario.js # User schema definition
+│ ├── routes/
+│ │ ├── gamesRoutes.js # CRUD routes for product management
+│ │ ├── routes.js # General API routes
+│ │ └── userRoutes.js # User management routes
+│ ├── middlewares/
+│ │ └── authMiddleware.js # Authentication middleware
+│
+├── index.js # Main server entry point
+├── .env # Environment variables
+├── .gitignore # Files and directories to ignore in git
+├── package.json # Project dependencies and scripts
+├── README.md # Project documentation
 
-Con estas funciones auxiliares, el controlador será más limpio y fácil de entender.
-Ejemplo:
+API Endpoints
 
-```javascript
-const showProducts = async (req, res) => {
-  const products = await Product.find();
-  const productCards = getProductCards(products);
-  const html = baseHtml + getNavBar() + productCards;
-  res.send(html);
-};
-```
+The API includes the following endpoints for managing products:
 
-## Despliegue
+    Fetch all products
 
-Creamos un nuevo proyecto en fl0 y desplegamos el proyecto desde github. Recordad añadir las variables de entorno en fl0. Si no aparece el repositorio en fl0, tendremos que modificar los permisos de fl0 para que pueda acceder al repositorio.
+    http
 
-## Documentación
+GET /api/products
 
-Crearemos un archivo `README.md` que contenga la documentación del proyecto. En este readme explicaremos cómo poner en marcha la aplicación, las tecnologías que hemos usado, endpoints, etc.
+Returns a list of all products available in the store.
 
-## Bonus 1 - Tests
+Fetch product by ID
 
-Para poder comprobar que el controlador de productos funciona correctamente, vamos a crear tests para las funciones. Para ello, necesitaremos instalar el paquete `jest` y crear el archivo `productController.test.js` en la carpeta `test`. En este archivo, importaremos el controlador y crearemos los tests. Podemos hacer tests tanto para las funciones que devuelven html como para las funciones que crean, actualizan o eliminan productos.
+http
 
-## Bonus 2 - API y documentación con Swagger
+GET /api/products/:id
 
-Para poder usar la aplicación con un frontend en React, vamos a crear una API que haga las mismas operaciones que el controlador de productos, pero que devuelva los datos en formato JSON. Documentaremos la API con Swagger, para que sea más fácil de entender y usar.
+Retrieves details of a specific product by its ID.
 
-## Bonus 3 - Autenticación con Firebase
+Create a new product
 
-Vamos a crear un login y pass para el administrador con firebase. Para ello, necesitaremos instalar los paquetes `firebase` y `express-session` y configurar el proyecto en firebase. Podemos ver la guía de cómo hacerlo en el pdf [firebase.pdf](firebase.pdf).
+http
 
-Una vez configurado el proyecto en firebase, podremos crear un formulario de login. Este formulario enviará las credenciales a un endpoint que comprobará si son correctas. Si son correctas, redirigirá al dashboard. Si no, mostrará un mensaje de error. También tendremos una página de registro, a la que se podrá acceder desde el formulario de login. Además, tendremos que crear un archivo `firebase.js` que inicialice la conexión con firebase y que contenga las funciones para comprobar si las credenciales son correctas y para cerrar la sesión.
+POST /api/products
 
-Para comprobar si las credenciales son correctas, necesitaremos el middleware `express-session` para guardar la sesión del usuario. Tendremos que modificar el archivo index.js para que inicialice el middleware y lo use en las rutas del dashboard. También tendremos que añadir una palabra secreta para la sesión en el archivo .env y crear un archivo `middlewares/authMiddleware.js` que contenga el middleware para comprobar si el usuario está autenticado. Este buscará la sesión del usuario y, si no la encuentra, redirigirá al formulario de login.
+Adds a new product to the store. The request should include product data in JSON format.
 
-## Recursos
+Update an existing product
+
+http
+
+PUT /api/products/:id
+
+Updates an existing product based on its ID.
+
+Delete a product
+
+http
+
+DELETE /api/products/:id
+
+Deletes an existing product by its ID.
+
+## Resources
 
 - [Express](https://expressjs.com/)
 - [Mongoose](https://mongoosejs.com/)
-- [Atlas](https://www.mongodb.com/cloud/atlas)
 - [Fl0](https://fl0.io/)
 - [dotenv](https://www.npmjs.com/package/dotenv)
 - [express-session](https://www.npmjs.com/package/express-session)
 - [express.urlencoded](https://expressjs.com/en/api.html#express.urlencoded)
 - [express.static](https://expressjs.com/en/api.html#express.static)
 - [Template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)
-- [Pug](https://pugjs.org/api/getting-started.html)
-- [Firebase](https://firebase.google.com/)
-  - [Firebase Auth](https://firebase.google.com/docs/auth)
-  - [Get Started with Firebase Authentication on Websites](https://firebase.google.com/docs/auth/web/start)
