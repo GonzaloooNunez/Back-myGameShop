@@ -123,11 +123,15 @@ Back-myGameShop/
 
 API Endpoints
 
-The API includes the following endpoints for managing products:
+The API includes the following endpoints for managing products but just with the Admin role. However, as a user we can access and buy any game.
 
-    Fetch all products
+    - Fetch all products:
+     https://back-my-game-shop.vercel.app/games
 
-    http
+     -Fetch product by Id:
+     https://back-my-game-shop.vercel.app/games/:id
+
+     And more...
 
 GET /api/products
 
