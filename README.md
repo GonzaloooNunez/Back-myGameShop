@@ -94,33 +94,7 @@ The project structure is organized to separate responsibilities clearly, making 
 
 bash
 
-\```
-Back-myGameShop/
-│
-├── src/
-│ ├── config/
-│ │ └── db.js # MongoDB connection and configuration
-│ ├── controllers/
-│ │ ├── gameController.js # Business logic for products
-│ │ ├── opinionGameController.js # Business logic for game reviews
-│ │ └── userController.js # Business logic for user management
-│ ├── models/
-│ │ ├── Games.js # Product (games) schema definition with Mongoose
-│ │ ├── Admin.js # Admin schema definition
-│ │ └── Usuario.js # User schema definition
-│ ├── routes/
-│ │ ├── gamesRoutes.js # CRUD routes for product management
-│ │ ├── routes.js # General API routes
-│ │ └── userRoutes.js # User management routes
-│ ├── middlewares/
-│ │ └── authMiddleware.js # Authentication middleware
-│
-├── index.js # Main server entry point
-├── .env # Environment variables
-├── .gitignore # Files and directories to ignore in git
-├── package.json # Project dependencies and scripts
-├── README.md # Project documentation
-\```
+Back-myGameShop/ │ ├── src/ │ ├── config/ │ │ └── db.js # MongoDB connection and configuration │ ├── controllers/ │ │ ├── gameController.js # Business logic for products │ │ ├── opinionGameController.js # Business logic for game reviews │ │ └── userController.js # Business logic for user management │ ├── models/ │ │ ├── Games.js # Product (games) schema definition with Mongoose │ │ ├── Admin.js # Admin schema definition │ │ └── Usuario.js # User schema definition │ ├── routes/ │ │ ├── gamesRoutes.js # CRUD routes for product management │ │ ├── routes.js # General API routes │ │ └── userRoutes.js # User management routes │ ├── middlewares/ │ │ └── authMiddleware.js # Authentication middleware │ ├── index.js # Main server entry point ├── .env # Environment variables ├── .gitignore # Files and directories to ignore in git ├── package.json # Project dependencies and scripts ├── README.md # Project documentation
 
 API Endpoints
 
