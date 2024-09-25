@@ -94,6 +94,7 @@ The project structure is organized to separate responsibilities clearly, making 
 
 bash
 
+\```
 Back-myGameShop/
 │
 ├── src/
@@ -119,6 +120,7 @@ Back-myGameShop/
 ├── .gitignore # Files and directories to ignore in git
 ├── package.json # Project dependencies and scripts
 ├── README.md # Project documentation
+\```
 
 API Endpoints
 
