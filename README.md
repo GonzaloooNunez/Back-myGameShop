@@ -131,43 +131,7 @@ The API includes the following endpoints for managing products but just with the
      -Fetch product by Id:
      https://back-my-game-shop.vercel.app/games/:id
 
-     And more...
-
-GET /api/products
-
-Returns a list of all products available in the store.
-
-Fetch product by ID
-
-http
-
-GET /api/products/:id
-
-Retrieves details of a specific product by its ID.
-
-Create a new product
-
-http
-
-POST /api/products
-
-Adds a new product to the store. The request should include product data in JSON format.
-
-Update an existing product
-
-http
-
-PUT /api/products/:id
-
-Updates an existing product based on its ID.
-
-Delete a product
-
-http
-
-DELETE /api/products/:id
-
-Deletes an existing product by its ID.
+     With the Admin role we can add and update everything about a game or even delete them.
 
 ## Resources
 
